@@ -1,10 +1,40 @@
 import 'package:finalradio/Providers/myprovider.dart';
+import 'package:finalradio/others/lifecycleeventhandler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  AppLifecycleState lifecycleState;
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        Provider.of<MyProvider>(context, listen: false).changeFlagState();
+    }
+  }
+
+  // @mustCallSuper
+  // @protected
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MyProvider>(

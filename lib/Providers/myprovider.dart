@@ -1,4 +1,4 @@
-import 'package:finalradio/data/apiHelper.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_radio_player/flutter_radio_player.dart';
@@ -8,8 +8,14 @@ class MyProvider extends ChangeNotifier {
   FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
   bool flag = false, voiceFlag = false;
   String number;
+  void changeFlagState() {
+    isPlaying().then((value) => flag = value);
+    notifyListeners();
+  }
+
   MyProvider() {
     initRadio();
+    changeFlagState();
     // number = ApiHelper.apiHelper.getCallNumber() as String;
   }
   FlutterRadioPlayer getRadio() {
@@ -49,25 +55,42 @@ class MyProvider extends ChangeNotifier {
 
   play() async {
     try {
-      await _flutterRadioPlayer.play();
-      flag = true;
+      await _flutterRadioPlayer
+          .play()
+          .then((value) => value != null ? flag = value : flag = true);
+      // flag = true;
       notifyListeners();
     } on Exception catch (e) {
-      flag = false;
-      notifyListeners();
+      // flag = false;
+      // notifyListeners();
     }
   }
 
   pause() async {
     try {
-      await _flutterRadioPlayer.pause();
-      flag = false;
+      await _flutterRadioPlayer
+          .pause()
+          .then((value) => value != null ? flag = value : flag = false);
+      // flag = false;
       notifyListeners();
     } on Exception catch (e) {
       // TODO
       print(">>>> pause");
-      flag = true;
-      notifyListeners();
+      // flag = true;
+      // notifyListeners();
+    }
+  }
+
+  stop() async {
+    try {
+      await _flutterRadioPlayer.stop();
+      // flag = false;
+      changeFlagState();
+    } on Exception catch (e) {
+      // TODO
+      print(">>>> pause");
+      // flag = true;
+      // notifyListeners();
     }
   }
 }
